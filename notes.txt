@@ -1,0 +1,281 @@
+A. What is database?
+	--> Tables should store data related to one thing, for example customers.
+	--> If the database belongs to a larger entity, such as a business, then it 
+		may store related data in separate tables
+	--> For example: customers, items, purchases, stores, etc.
+
+B. Related data 
+	Tables 
+		Customers 
+			1. id = 1
+			2. first_name = John
+			3. last_name = Royce 
+			4. email = rozzs74@gmail.com
+
+		Purchases
+			1. id = 1
+			2. customer_id = 1
+			3. item_id = 1
+		
+		Items
+			1. id  = 1
+			2. name = laptop 
+			3. price  = 20.00
+	--> A related data can model these relationships between tables and columns in 
+		database systems designed for it.
+	--> There are other database systems which do not allow for relatioal data
+	--> They have other advantages, such as increased speed or simpler scalability
+
+C. A word on scalability
+	--> A database management system (Postgres) is installed and runs on a computer
+	--> Applications such as Python apps connect to that computer and ask it to 
+		retrieve data for them.
+	--> If there are too many requests for data, the computer can end up unable to cope 
+		with the load
+	--> Relational database management system (RDBMS) tend to not scale as well
+		as non-relatioal database management system
+D. Scalability 
+	--> Scalability is important because it enables the servers to serve more clients (your applications)
+	--> However, RDBMS allow you to interact and retrieve data easily
+	--> For example, using the tables shown earlier, it is easy to get 
+		revenue generated per customer. Using an RDBMS than a non relatioal system.
+C. Relational 
+	--> If your data is simple and there are few to no relationships between them:
+		"DONT USE A RELTIONAL  SYSTEM"
+	--> If your data is related, expect that as the applications grow and more data is 
+		collected, there will be more relationships.
+	--> With related data: use a relatioal system!
+
+D. Other elements of RDBMS 
+	--> Views
+	--> Functins
+	--> Aggregation
+	--> JOINs
+
+	--> RDBMS are fast
+	--> There are various RDBMS:
+		1. MySQL is arguably the most popular
+		2. PostgresSQL is arguably the best
+		3. SQL Server is good, but not free MSSQL
+		4. Oracle
+		5. There's more, but these are the main ones.
+
+
+STATEMENTS
+0. DATA TYPES
+	--> char(100) - consists of alphabet and numbers
+	--> integer - number data type 
+	--> primary key - unique value in the table
+0.A DATA TYPES CLAUSE 
+	--> NOT NULL - a clause that tells this column must not be empty
+	--> NULL - a clause that tells this column is empty.
+	--> VARYING - a clause that vary for particular range
+	--> CONSTRAINT - a clause that set primary key into multi column value 
+		Example: CONSTRAINT users_id_pkey PRIMARY KEY (id)
+		If using one column for primary use the standard process
+	--> REFERENCES - a clause that reference to a particular table and tells if this column was valid on the table.
+	--> AUTOINCREMENT - This is not existing into PostgresSQL
+
+1. SELECT STATEMENT 
+	--> SQL statement for retrieving data in database.
+	--> SYNTAX / USAGE (FILTER)
+		1. SELECT <column_name> / <table_name.column_name> FROM <table_name>;
+				-separated by comma if multiple
+		2. * (Alias for everything) - Select all columns of particular table
+		3. AS - Stands for Alias, a clause that can change column name of particular table.
+				Example:
+					SELECT customers.first_name AS "First name", customers.last_name AS "Last name" FROM customers;
+		4. WHERE - is clause that filters data.
+				-It filters everything in a particular table if the statement is not using ID since ID is unique.
+				- If used an ID it will change a single entity. because again ID is unique.
+				Example:
+					SELECT customers.first_name, customers.last_name  FROM customers WHERE customers.first_name = 'Rolf';
+		5. OR - is clause for adding condition on WHERE statement (T, F)
+				Example:
+					SELECT customers.first_name, customers.last_name  FROM customers WHERE customers.first_name = 'Rolf' OR customers.last_name = 'Watson';
+		6. AND - is clause for adding condition on WHERE statement (T, T)
+				Example:
+					SELECT customers.first_name, customers.last_name  FROM customers WHERE customers.first_name = 'Rolf' AND customers.last_name = 'Smith';
+		7. AND / OR - is clause statement for combining two conditional and use in WHERE statement. (T,F)
+				Example:
+					SELECT customers.first_name, customers.last_name  FROM customers WHERE customers.first_name = 'Rolf' AND customers.last_name = 'Smith' OR customers.last_name = 'Watson';
+	--> SYNTAX / USAGE (LIMIT)
+		1. LIMIT - is clause used to limit the numbers of row return by query.
+			Example:
+				SELECT customers.first_name, customers.last_name  FROM customers LIMIT 1
+			- Limit is useful for pagination.
+	--> We can combine filter and limit process in SELECT statement
+		Example:
+			SELECT customers.first_name, customers.last_name  FROM customers  WHERE customers.first_name = 'Michael' LIMIT 1
+	--> SYNXTAX /USAGE (WILDCARDS, REGEX, PATTERN MATCHING)
+			1. LIKE 
+				--> Use for searching particular data.
+				--> A clause for representing wild card patterns.
+				--> This is helpful when you are retrieving data that has particular value.
+				--> WILDCARD PATTERNS:
+					'%' character is similar to *. Alis for everything
+					'____' - equal to 4 length.
+				Example:
+					SELECT * FROM customers WHERE last_name LIKE '%';
+					SELECT * FROM customers WHERE last_name LIKE '%t%'; 
+						--> It query all data matching t before and after position.
+					SELECT * FROM customers WHERE last_name LIKE '%t_'; 
+						--> It query the last name that as value before t and 1 data.
+	--> SYNTAX / USAGE (AGGREGATE FUNCTIONS)
+			1. SUM - Gets the total of particular data
+				Examples:
+					SELECT customers.first_name, customers.last_name, SUM(items.price) FROM items INNER JOIN purchases ON items.id = purchases.item_id INNER JOIN customers ON purchases.customer_id = customers.id GROUP by customers.id;
+					SELECT SUM(items.price) FROM purchases INNER JOIN items on purchases.id = items.id;
+			2. GROUP BY - is clause statement that groups data.
+	--> SORTING 
+			1. ORDER BY - is clause statement that sort ASC and DESC of the returned data 
+				Example
+					SELECT customers.first_name, customers.last_name, SUM(items.price) AS "total_spent" FROM items 
+							INNER JOIN purchases ON purchases.item_id = items.id
+							INNER JOIN customers ON purchases.customer_id = customers.id 
+							GROUP BY customers.id
+							ORDER BY total_spent DESC;
+	--> SQL SEQUENCE (AUTO INCREMENT OF ID)
+		NOTE: AUTOINCREMENT IS NOT EXISTING in  PostgresSQL it's only available to MySQL.
+		1. SEQUENCE is used to create numbers sequentially.
+		--> SYNTAX
+			CREATE SEQUENCE <SEQUENCE_NAME> START <SPECIFY WHERE TO START A SEQUENCE MAY DEPENDS IN TABLE>
+			Example
+				1. CREATE SEQUENCE users_id_seq START 3;
+				2.  ALTER TABLE public.users
+					ALTER COLUMN id
+					SET DEFAULT nextval('users_id_seq');
+				3. ALTER SEQUENCE users_id_seq OWNED BY public.users.id;
+	--> SQL INDEXES
+		- They allow table to perform search fast.
+		- Concept for this
+			1. If you have million records in table and tried to search single entity it will take long time to retrieve the data. 
+				By using index it will retrieve the data in short time.
+				--> https://www.postgresql.org/docs/9.1/static/sql-createindex.html
+			2. In short the index allows us to search fast into the table. However index is not free you to have allocate resources 
+				to use this feature. For example (Disk).
+			3. We can also create multi column INDEXES
+			4. Indexes intended to increase Database performance. It must be avoided by this valid reasons.
+    			- Indexes should not be used on small tables.
+   	 			- Tables that have frequent, large batch update or insert operations.
+    			- Indexes should not be used on columns that contain a high number of NULL values.
+    			- Columns that are frequently manipulated should not be indexed.
+
+		--> SYNTAX
+			SINGLE COLUMN INDEX - CREATE INDEX <INDEX NAME> ON <TABLE_NAME> / <SCHEMANAME.TABLE_NAME> (COLUMN_NAME)
+			UNIQUE INDEX - CREATE UNIQUE INDEX <INDEX NAME> ON <TABLE_NAME> / <SCHEMANAME.TABLE_NAME> (COLUMN_NAME)
+			MULTI COLUM INDEX / MULTI COLUMN - CREATE INDEX <INDEX NAME> ON <TABLE_NAME> / <SCHEMANAME.TABLE_NAME> (COLUMN_NAMES)			
+			Example
+				CREATE INDEX users_name_index ON public.users(name);
+				CREATE UNIQUE INDEX user_name ON public.videos(name);
+				CREATE INDEX multi_index ON public.videos(id, user_id);
+
+2. UPDATE STATEMENT
+	--> SQL statement for updating data in table.
+	--> SYNTAX 
+		UPDATE <table_name> SET <column_name> WHERE <do the filter here>;
+		- We know the WHERE is for filtering item in table.
+			Example:
+				UPDATE items SET price = 4.00 WHERE id = 4;
+				UPDATE items SET price=10.00; // Update all price column into 10.00
+		1. SET - is command for setting column_name to new value.
+		UPDATE items SET price = 4.00
+			- updates all price column to 4.00 (this is a mess!)
+3. DELETE STATEMENT
+	--> SQL statement for deleting rows in table
+	--> DELETE command is dangerous because it completely removes the data on the database. (HARD DELETE)
+	--> (SOFT DELETE) For soft delete process use UPDATE sql command then create column name for example is_deleted 
+		set the data type to boolean.
+	--->SYNTAX
+		DELETE FROM <table_name> 
+			-- DELETES everything in table (this is a mess!)
+		DELETE FROM items WHERE id = 4
+			-- Assume that id is unique and referenced from a another table. In short Foreign key.
+			-- This is a mess!
+			-- To achieve it delete first the row data to the referenced table the one using the entity.
+				Example - DELETE FROM purchases WHERE item_id=4;
+			-- Then run again the query.
+4. INSERT STATEMENT
+	--> SQL statement that inserts data to table 
+	--> SYNTAX
+		INSERT INTO <TABLE_NAME> / <SCHEMANAME/TABLE_NAME> (<COLUMN NAME) VALUES (<DATA COLUMN ORDERED SEQUENCE>)
+		INSERT INTO <TABLE_NAME> / <SCHEMANAME/TABLE_NAME> VALUES(<DATA COLUMN ORDERED SEQUENCE>)
+		Example
+		INSERT INTO public.users (id, name) VALUES (1, 'Royce');
+
+JOINS
+ --> are one of the key elements of relatioal databases because...
+ --> They allow us to retrieve data from multiple tables at once.
+ --> The advantage of using JOINS is avoiding manual retrieve in database.
+ --> Are essential to relatinal data, as it lets us get data from various (Not twice but many) tables.
+ --> Are quick! Much quicker than getting the data from the tables separately and matching the data in our application.
+ --> The most common by far is INNER JOIN, followed by Left JOIN.
+ Other term
+	--> JOINS are like Sets
+		--> We have looked at Sets in Python before: "unordered groups of unique elements"
+	--> JOINs treat rows of data as if they were Sets
+	--> We can perform Set operations on the tables
+
+--> Intersect
+	--> Set intersection is the elements common to two sets
+
+	1. Inner JOIN (http://prntscr.com/k7u9nu) (I)
+		--> The SQL INNER JOIN is akin to set intersection
+		--> Keyword is Intersect
+		--> Selects rows from table1 and table2 where they match the selecting column.
+		--> Example of Inner JOIN Concept http://prntscr.com/k7ufzp
+
+	2. Left JOIN (http://prntscr.com/k7uk6v) - (L, R, I)
+		--> This selects all rows from the table1, on the left, the rows from the table1, on the right, if they match.
+		--> If they don't match the right table is blank.
+		--> Example of Left JOIN Concept http://prntscr.com/k7ukib
+		--> Other name is LEFT OUTER JOIN
+	3. Right JOIN (https://prnt.sc/k7ulxh) - (R, L, I)
+		--> Opposite of LEFT JOIN
+		--> This selects all the rows from the table on the right, and then the rows from the table on left if they match.
+		--> If they don't match, the data for the table on the left is blank.
+		--> Example of Right JOIN Concept http://prntscr.com/k7upj7
+	4. Full JOIN (http://prntscr.com/k7uqkh) - (L,R,I) + (R, L, I)
+		--> This selects all rows from both tables, matching them if there is a match on the selecting column.
+		--> If they don't match the data is blank
+		--> Think of it as both LEFT AND RIGHT JOIN
+		--> Example of Full JOIN Concept http://prntscr.com/k7utx6
+
+
+CREATING TABLE - A command that creates table in the database.
+	---> SYNTAX
+	1. Note: It's a good practice to include schema name for table creation.
+	CREATE TABLE <TABLE_NAME> / <SCHEMANAME/TABLE_NAME> (
+		<COLUMN NAME> <DATA TYPE>
+	)
+	Example
+	CREATE TABLE public.users (
+		id INTEGER PRIMARY KEY,
+		name CHARACTER VARYING(100) NOT NULL
+	)
+	CREATE TABLE public.videos (
+		id INTEGER PRIMARY KEY,
+		user_id INTEGER REFERENCES public.users,
+		name character VARYING(255) NOT NULL
+	)
+
+ALTER TABLE - A command that updates table configuration in the database.
+	--> SYNTAX 
+	ALTER TABLE <TABLE_NAME> / <SCHEMANAME/TABLE_NAME> 
+	ALTER COLUMN <COLUMN_NAME>
+	SET DEFAULT nextval('users_id_seq');
+	Example
+		ALTER TABLE public.users
+		ALTER COLUMN id
+		SET DEFAULT nextval('users_id_seq');
+
+DROP TABLE - A command that delete table in the databse.
+	1. If there is Foreign key relationship you can't drop table. To do so include CASCADE.
+	-->
+		DROP TABLE <TABLE_NAME> / <SCHEMANAME.TABLE_NAME>;
+	
+	Example
+		 DROP TABLE public.users;
+		 DROP TABLE public.users CASCADE;
+		 DROP TABLE IF EXISTS public.videos.
+IF EXISTS - Is a clause command that checks and validate if the table is existing. It's useful to check it first to avoid error.

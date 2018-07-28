@@ -1,0 +1,12 @@
+--> psql
+--> \help
+--> \du - list of user roles
+--> CREATE ROLE patrick WITH LOGIN PASSWORD 'Getting started'; - create new roles
+--> ALTER ROLE patrick CREATEDB; - Add new role to particular user.
+--> psql postgres -U <user_name> - To login as user in postgres then type password
+--> \connect dbname - connect to database 
+--> \dt - list all tables of database currently connected.
+--> \list - list all database
+--> CTRL + L = to clear psql interpreter.
+
+REF: https://www.codementor.io/engineerapart/getting-started-with-postgresql-on-mac-osx-are8jcopb

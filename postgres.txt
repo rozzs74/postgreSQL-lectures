@@ -1,0 +1,187 @@
+Date created: July 27, 2018;
+Created by Royce:
+
+Chapter 1. (Introduction)
+	I. Installation
+		What is PostgreSQL? 
+			--> is an object-relational database management system (ORDBMS).
+			--> ORDBMS - is a database management system similar to relational database but with an object-oriented database model.
+							objects, classes and inheritance are directly supported in database schemas and in the query language.
+			--> Object database  - An object database is a database management system in which information is represented in the form of objects as used in object-oriented programming. 
+									Object databases are different from relational databases which are table-oriented. 
+									Object-relational databases are a hybrid of both approaches.
+			--> Developed at the University of California at Berkeley Computer Sciene Department.
+			--> Written in C and the initial release was 29 January 1997.
+			--> Postgres originates(pioneer) many concepts that only became available in some commercial database systems (Oracle, MSSQL, Teradata) much later.
+			--> PostgresSQL is an original ancestor of open source database in Berkeley code. It supports a large part of the SQL standard and offers many modern features like:
+					a. Complex queries - Complex SQL queries go beyond the standard SQL query commands such as SELECT. For example Consider the huge amount of data that would be present in a music database like Spotify. 
+										Sometimes you want to search for more than just a single artist or album or maybe you want to pull together different subsets of data.
+					b. Foreign keys - A FOREIGN KEY is a key used to link two tables together.
+									  A FOREIGN KEY is a field (or collection of fields) in one table that refers to the PRIMARY KEY in another table. 
+									  The table containing the foreign key is called the child table, and the table containing the candidate key is called the referenced or parent table.
+					c. Triggers - is special stored procedure that is run when specific actions occur within a database. 
+								  Most triggers are defined to run when changes are made to table's data.
+					d. Updatable views - An updatable view is one which allows performing a UPDATE command on itself without affecting any other table.
+					e. Transactional integrity - A transaction is a unit of work that is performed against a database. Transactions are units or sequences of work accomplished in a logical order, whether in a manual fashion by a user or automatically by some sort of a database program.
+					f. Multiversion concurrency control (MCC) - is a concurrency control method commonly used by database management systems to provide concurrent access to the database and in programming languages to implement transactional memory.
+							Without concurrency control, if someone is reading from a database at the same time as someone else is writing to it, it is possible that the reader will see a half-written or inconsistent piece of data. 
+							For instance, when making a wire transfer between two bank accounts if a reader reads the balance at the bank when the money has been withdrawn from the original account and before it has deposited in the destination account, it would seem that money has disappeared from the bank. 
+			--> Also, PostgreSQL can be extended by the user in many ways, for example by adding new
+					a. Data types - boolean, characters (char, varchar, text), numbers (integer, float), temporal (date, time, timestamp, timestampz, interval), Arrays, JSON, UUID,  Special(box, line, point, lseg, polygon, inet, macaddr)
+					b. Functions - also known as Stored Procedures, allow you to carry out operations that would normally take several queries and round trips in a single function within the database. Functions allow database reuse as other applications can interact directly with your stored procedures instead of a middle-tier or duplicating code.
+								   Functions can be created in a language of your choice like SQL, PL/pgSQL, C, Python, etc.
+					c. Operators - is a reserved word or a character used primarily in a PostgreSQL statement's WHERE clause to perform operation(s), such as comparisons and arithmetic operations.
+									- Arithmetic operators
+									- Comparison operators
+									- Logical operators
+									- Bitwise operators
+					d. Aggregate functions - An aggregate function computes a single result from multiple input rows. For example, there are aggregates to compute the count, sum, avg (average), max (maximum) and min (minimum) over a set of rows.
+					e. Index methods - This is referring to have an enhance database performance.
+					f. Procedural language - PostgreSQL allows user-defined functions to be written in other languages besides SQL and C. These other languages are generically called procedural languages (PLs).
+			--> And because of the liberal license, PostgreSQL can be used, modified and distributed by anyone free of charge for any purpose, be it private, commercial or academic.
+		Brief History of PostgreSQL
+			--> PostgreSQL is derived from the POSTGRES package written at UCal with over two decades of development behind it. Today PostgreSQL is now the most advanced open-soruce database availble anywhere.
+			--> POSTGRES (data model) project led by Professor Michael Stonebraker was sponsored by DARPA, ARO, NSF and ESL INC.
+			--> The implementation of POSTGRES began in 1986.
+			--> The demoware system became operational in 1987 and was shown 1988 ACM-SIGMOD conference.
+			--> Version 1 released to few external users in June 1989.
+			--> They came up to redesign due to critique of the first rule sytem. Version 2 was released in June 1990 with new rule system.
+			--> Version 3 appeared in 1991 and added support for multiple storage managers, an improved query executor and a rewritten rule system.
+			--> Beyond 1991 POSTGRES has been used to implement many different research production application. These includes the ff:
+					- Financial data analysis system
+					- Jet engine performance monitoring package
+					- Asteriod tracking database 
+					- Medical information database 
+					- Several geographic information systems
+					- Educational tool at several universities
+			--> In late 1992 Illustra information technicalogies commercialized it and POSTGRES became the primary data manager.
+			--> The size of external user community doubled nearly during 1993. The more user the more bugs came out. It became increasingly maintenance and support.
+				To reduce support burden the Berkeley POSTGRES project officially ended with version 4.2.
+			--> In 1994, Andrew Yu and Jolly Chen added an SQL language interpreter to POSTGRES. Under a new name, Postgres95 was subsequently
+					released to the web to find its own way in the world as an open-source descendant of the original POSTGRES Berkeley code.
+			--> Postgres95 was faster than Version 4.2 base on Wisconsin benchmark. There are many enhancement including bug fixes.
+			--> By 1996 it became clear that the name Postgres95 would not stand test of time. We chose new name PostgreSQL to reflect the relationalship 
+				between the original POSTGRES and the more recent versions with SQL capability. At the same time, we set the version number to start 6.0
+		Conventions
+			--> An administrator is generally a person who is in charge of installing and running the server. 
+				A user could be anyone who is using or wants to use any part of the PostgreSQL system.
+	II. Architectural Fundamentals: 
+		--> Architectural may refer to or in short for summary server and client model.
+		--> In database jargon(technical terminology), PostgresSQL uses client / server models.
+		--> PostgresSQL session consists of cooperating processes (running programs behind it).
+			A. Server Process - This is for server process operations.
+				- Manages database files.
+				- Connections to the database from client applications.
+				- Performs database actions on behalf of clients.
+				- The database server program is called "POSTGRES".
+			B. User - frontend application and user developer.
+				- A front end application that wants to perform database operations.
+				- Different types of application may refer to platform type of application.
+					1. CLI - A client could be a text-oriented tool. For example task automations, library SDK.
+					2. GUI - A graphical user interface application. For example desktop apps, web apps, mobile apps.
+					3. Hosting environment - A web server that accesses the database to display web pages, or a specialized
+									database maintenance tool. 
+					4. Other - Some client applications are supplied with the PostgreSQL distribution; most are developed by users.
+		--> PostgreSQL architectural model (server and client) they communicate over a TCP / IP network connection.
+		--> Keep in mind the files that can be accessed on a client machine might not be accesseble. (or may accessible using a file name) on machine.
+		--> PostgreSQL server can handle multiple concurrent connections from clients. To achieve this it starts "fork" (replicating) a new process
+			for each connection. The concept behind this statement is that tha postgres server is self replicating invocation. In short 
+				it replicate itself rather than accepting connection.
+		--> Master server(replicated postgres) is always running waiting for client connections. Whereas client and associated server processes  come and go.
+		--> All this processes are invisible to the user. We are metion it here for completeness.
+
+Chapter 2 (THE SQL LANGUAGE)
+	I.Concepts
+		--> PostgreSQL is relational database management system (RDBMS).That means it is a system for managing data stored in relations.
+		--> Relation is essentially a mathematical term for table.
+		--> Each table is a named collection of rows.
+		--> Each row of a given table has the same set of named columns.
+		--> Each column is of a specific data type.
+		--> Tables are grouped into databases,  and a collection of databases managed by a single PostgreSQL server instance 
+			constitues a database cluster.
+	II. Creating a new table
+		--> You can create new table by specifying the table name along with column names and their types.
+			Example
+				CREATE TABLE weather (
+					city 		varchar(80),
+					temp_lo 	int,  -- low temperature
+					temp_hi 	int,  -- high temperature
+					prcp		real  -- precipitation  real is 6 digits value only
+					date		date
+				)
+
+				CREATE TABLE cities (
+					name varchar(80),
+					location point -- Geometric data type
+				)
+	III. Populating a table with Rows 
+		--> INSERT statement is used to populate a table with rows.
+			Example:
+			--> Implicit way
+				INSERT INTO weather VALUES ('San Francisco'), 46, 50, 0.25, '1994-11-27');
+				INSERT INTO city VALUES ('San Francisco', '(-194.0, 53.0)');
+			--> Explicit way 
+				INSERT INTO weather (city, temp_lo, temp_hi, prcp, data) 
+					VALUES ('San Francisco'), 46, 50, 0.25, '1994-11-27');
+		--> For insert you can lst the columns in a different order if you wish.
+		--> Many developers consider explicitly listing the columns better style than relying on the order of implicitly.
+	IV. Querying a Table
+		--> Quired is to retrieve data from a table.
+		--> An SQL SELECT statement is used to do this.
+			Example
+				SELECT * FROM weather;
+				--> * is a shorthand for all columns with this -> SELECT city, temp_lo, temp_hi, prcp, date FROM weather;
+				--> You can write expressions not just simple column references.
+					-> SELECT city, (temp_hi + temp_lo) / 2 AS temp_avg, date FROM weather;
+				--> AS - a clause that is used to relabel the output column.
+				--> WHERE - a clause that specifies which rows are wanted. It contains Boolean (truth value) expression usally (AND, OR and NOT)
+					-> SELECT * FROM weather WHERE city = 'Antipolo City' AND prcp > 2;
+				--> ORDER - a clause that sort rows in order.
+					-> SELECT * FROM weather ORDER BY city;
+					-> SELECT * FROM weather ORDER BY city, temp_lo;
+				--> DISTINCT - a clause that removes duplicate rows from the query result.
+					-> SELECT DISTINCT city FROM weather ORDER by city;
+		Notes:
+			1. While SELECT * is useful for off-the-cuff queries, it is widely considered bad style in production code. 
+				Since adding a column to the table would change the results.
+	V. JOINS BETWEEN TABLES
+		--> Thus far, our queries have only accessed one table at time.
+		--> Queries can access multiple tables at once, or access the same table in such a way that multiple rows 
+			of the table are being processed at the same time.
+		--> Join - A query that accesses multiple rows of the same or different tables at one time.
+		--> This statement is only a conceptual model. The join is usally performed in a more efficient manner.
+		--> It is widely considered good style to qualify all column names in a join query, so that the query won't faile of a 
+		duplicate column name is later added to one of the tables.
+		--> Example
+			SELECT * FROM weather, cities WHERE city = name;
+			Types of JOIN
+		--> Inner JOIN (http://prntscr.com/k7u9nu) (I)
+			--> The SQL INNER JOIN is akin to set intersection
+			--> Keyword is Intersect
+			--> Selects rows from table1 and table2 where they match the selecting column.
+			--> Example of Inner JOIN Concept http://prntscr.com/k7ufzp
+			--> Example
+				SELECT * FROM weather INNER JOIN cities ON (weather.city = cities.name);
+		--> LEFT OUTER JOIN 
+			--> Example
+				SELECT * FROM weather LEFT OUTER JOIN CITIES ON (weather.city = cities.name)
+		--> SELF JOIN
+			--> We can also join a table against itself. This is called a self join.
+			--> Example
+			 	SELECT W1.city, W1.temp_lo AS low, W1.temp_hi as high, W2.city, W2.temp_lo AS low, W2.temp_hi as high FROM weather W1, weather W2 WHERE W1.temp_lo < W2. temp_lo AND W1.temp_hi > W2.temp_hi;
+			--> Here we have relabeled the weather table as W1 and W2 to be able to distinguish the left and right side of the join.
+			--> We can use this kind of aliases in other queries to save some typing.
+			--> Example	
+				SELECT * FROM weather w, cities c WHERE w.city = c.name;
+			--> We will encounter this style of abbreviating quite frequently.
+	VI. Aggregate Functions
+		--> Like most other relational database products, PostgreSQL supports aggregate functions.
+		--> Aggregate function - computes a single result from multiple input rows.
+		--> Types of aggregate function that computes over a set of rows.
+			A. count 
+			b. sum 
+			c. avg (average)
+			d. max (maximum)
+			e. min (minimum)
+		
+		
