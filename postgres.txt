@@ -215,3 +215,7 @@ Chapter 2 (THE SQL LANGUAGE)
 			which rows will be inputs to the aggregates.
 		--> On the other hand, the HAVING clause always contains aggregate functions. (Stricly speaking, you are allowed to write a HAVING clause 
 		that doesn't user aggregates) but it's seldom useful.
+	VII. Updates
+		--> You can update existing rows using the UPDATE command.
+		--> Example
+			UPDATE weather SET temp_hi = temp_hi -2, temp_lo = temp_hi -2 WHERE date > '1994-11-28';
