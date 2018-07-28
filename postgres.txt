@@ -177,11 +177,41 @@ Chapter 2 (THE SQL LANGUAGE)
 	VI. Aggregate Functions
 		--> Like most other relational database products, PostgreSQL supports aggregate functions.
 		--> Aggregate function - computes a single result from multiple input rows.
+		--> Aggregate function - produced a single result for an entire group or table.
+		--> Aggregate function -  are used to produce summarized results.
+		--> Aggregate function - They operate on sets of rows. They return results based on groups of rows. By default, all rows in a table are treated as one group.
 		--> Types of aggregate function that computes over a set of rows.
-			A. count 
-			b. sum 
-			c. avg (average)
-			d. max (maximum)
-			e. min (minimum)
-		
-		
+			A. count - This function returns the number or rows or non NULL values for a column
+			b. sum   - This function returns the sum of a selected column.
+			c. avg (average) - This function returns the average value for a specific column. 
+			d. max (maximum) - This function returns the largest value of a specific column.
+			e. min (minimum) - This function returns the smallest value of a specific column. 
+		--> Example
+			SELECT count(W1.temp_lo) FROM weather W1;
+			SELECT sum(W1.temp_lo) FROM weather W1;
+			SELECT avg(W1.temp_lo) FROM weather W1;
+			SELECT max(temp_lo) FROM weather;
+			SELECT min(temp_lo) FROM weather;
+		--> Aggregate functions cannot be used inside WHERE claused. This restriction exists because the WHERE clause 
+			determines which rows will be included in the aggregate calculation; so obviously it has to be evaluated before 
+			aggregate functions are computed.
+			SELECT city FROM weather WHERE temp_lo = max (temp_lo); # WRONG 
+			SELECT city FROM weather WHERE temp_lo = (SELECT max(temp_lo) FROM weather); # CORRECT
+		--> This is valid because the subquery is an indenpendent computation that computes its own aggregate separately from 
+			what is happening in the outer query.
+		--> Aggregates also very useful in combination with GROUP BY clauses. For example we can get the maximum low temperature observed in each city.
+		--> Example
+			SELECT city, max(temp_lo) FROM weather GROUP BY city;
+			SELECT w.city, max(w.temp_lo) FROM weather w GROUP BY w.city;
+		--> Each aggregate result is computed over the table rows matching that city. We can filter these grouped row using HAVING
+		--> Example
+			SELECT city, max(temp_lo) FROM weather GROUP by city HAVING max(temp_lo) < 40;
+		--> SELECT city, max(temp_lo) FROM weather WHERE city LIKE 'S%' GROUP BY city HAVING max(temp_lo) < 40;
+		--> The LIKE operator does pattern matching
+		--> The understanding and interaction between aggregates SQL WHERE and HAVING caluses.
+		--> WHERE - selects input rows BEFORE groups and aggregates are computed (it controls which rows go into the aggregate computation).
+		--> HAVING - whereas HAVING selects group rows AFTER groups and aggregates computed.
+		--> Thus, the WHERE clause must not contains aggregate functions; it makes no sense to try to use an aggregate to determine 
+			which rows will be inputs to the aggregates.
+		--> On the other hand, the HAVING clause always contains aggregate functions. (Stricly speaking, you are allowed to write a HAVING clause 
+		that doesn't user aggregates) but it's seldom useful.
