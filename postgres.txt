@@ -219,3 +219,10 @@ Chapter 2 (THE SQL LANGUAGE)
 		--> You can update existing rows using the UPDATE command.
 		--> Example
 			UPDATE weather SET temp_hi = temp_hi -2, temp_lo = temp_hi -2 WHERE date > '1994-11-28';
+	VIII. Deletions
+		--> Rows can be removed from a table using DELETE command. 
+		--> Example
+			DELETE FROM weather WHERE city = 'Hayward';
+		--> To remove all rows from a given table, leaving it empty. (THE SYSTEM WILL NOT REQUEST CONFIRMATION BEFORE DOING THIS!)
+			DELETE FROM <tablename>
+			DELETE FROM weather;
