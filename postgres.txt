@@ -338,7 +338,6 @@ Chapter 3 (Advanced Features)
 				UPDATE accounts SET balance  = balance - 100.00 WHERE name = 'Alice';
 			SAVEPOINT my_savepoint;
 				UPDATE accounts SET balance = balance + 100.00 WHERE name = 'Bob';
-				# OOPS forget that and use Wally's account.
 			ROLLBACK TO my_savepoint;
 				UPDATE accounts SET balance = balance + 100.00 WHERE name = 'Walley';
 			COMMIT;
@@ -346,3 +345,27 @@ Chapter 3 (Advanced Features)
 			through the use of savepoints. 
 		--> Moreover ROLLBACK TO is the only way to regain control of transaction block that was put in aborted state
 			by the sytem due to an error, short of rolling it back completely and starting again.
+	V. Window Functions
+		--> The term window describes the set of rows on which the window function operates. A window function returns a value from the rows in a window.
+		--> Window function - performs a calculation across a set of table rows that are somehow related 
+			to the current row. This is comparable to the type of calculation that can be done with aggregate function.
+		--> Aggregate functions reduces the number of rows returned by the queries but window functions operates in set of rows, but 
+			it does not reduce the number of rows returned by the query.
+		--> However, window functions do not cause rows to become grouped into a single output row lie non-window aggregate calls would.
+		--> Example
+			SELECT depname, empno, salary avg(salary) OVER (PARTITION by depname) FROM empsalary;
+		--> A window function call always contains an OVER clause directly following the window function's name and argument(s).
+		--> This is what syntactically distinguishes it from a normal function or non-window aggregate.
+		--> The OVER clause determines exactly how the rows of the query are split up for processing by the window function.
+		--> The PARTITION By clause within OVER divides the rows into groups, or partitions that share the same values f the PARTITION BY expression.
+		--> You can also control the order in which rows are processed by window functions using ORDER BY within OVER.
+		--> Example
+			SELECT depname, empno, salary, rank() OVER (PARTITION by depname ORDER BY salary DESC) FROM empsalary;
+		--> As from the query the rank() function produces a numerical rank for each distinct ORDER BY value in the current 
+			row's position.
+		--> There is another import concept associated with window functions: for each row, there is a set of rows 
+			within its partition called its window frame.
+		--> Some window functions act only on the rows of the window frame, rather than of the whole partition.
+		--> Example
+			SELECT salary, sum(salary) OVER () FROM empsalary;
+			SELECT salary, sum(salary) OVER (ORDER BY salary) FROM empsalary;

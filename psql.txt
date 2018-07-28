@@ -8,5 +8,5 @@
 --> \dt - list all tables of database currently connected.
 --> \list - list all database
 --> CTRL + L = to clear psql interpreter.
-
+--> to open psql interactive shell - cd /Users/johnroycepunay/PostgreSQL/pg10;source pg10.env;bin/psql;exit
 REF: https://www.codementor.io/engineerapart/getting-started-with-postgresql-on-mac-osx-are8jcopb
