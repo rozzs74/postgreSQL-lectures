@@ -226,3 +226,48 @@ Chapter 2 (THE SQL LANGUAGE)
 		--> To remove all rows from a given table, leaving it empty. (THE SYSTEM WILL NOT REQUEST CONFIRMATION BEFORE DOING THIS!)
 			DELETE FROM <tablename>
 			DELETE FROM weather;
+Chapter 3 (Advanced Features)
+	I. Introduction
+		--> We will now discuss some more advanced features of SQL that simplify management and prevent loss or corruption of your 
+			data. We will look some PostgreSQL extensions.
+	II. Views
+		--> Views are pseudo-table (Implicit).
+		--> A view can contain all rows of a table or selected rows from one or more tables.
+		--> A view can be created from one or many tables, which depends on the written PostgreSQL query to create a view.
+		--> Views allow you to encapsulate the details of the structure of your tables, which might change as your 
+		application evolves, behind consistent interfaces.
+		--> A view can represent a subset of a real table, selecting certain columns or certain rows from an ordinary table. 
+		--> A view can even represent joined tables.
+		--> Because views are assigned separate permissions, you can use them to restrict table access so that the users see only specific rows or columns of a table.
+		--> Views, which are kind of virtual tables, allow users to do the following
+			1. Structure data in a way that users or classes of users find natural or intuitive.
+			2. Restrict access to the data such that a user can only see limited data instead of complete table.
+			3. Summarize data from various tables, which can be used to generate reports.
+		--> Example
+			1. CREATE VIEW myview AS 
+				SELECT city, temp_lo, temp_hi, prcp, date, location FROM weather, cities WHERE city = name;
+			2. SELECT * FROM myview;
+		--> Droppin Views 
+			DROP VIEW <view_name>;
+			DROP VIEW myview;
+	III. Foreign keys	
+		--> A concept behind foreign keys is you want to make sure that no one can insert rows in the weather table that do not 
+			have a matching entry in the cities table. This is called maintaining referential integrity of your data.
+		--> In simplistic database systems this would be implemented (if at all).
+		--> Example
+			CREATE TABLE cities (
+				city VARCHAR(80) PRIMARY KEY,
+				location POINT 
+			);
+			CREATE TABLE weather (
+				city VARCHAR(80) REFERENCES cities(city),
+				temp_lo INT, 
+				temp_hi INT,
+				prcp REAL,
+				date DATE
+			);
+			INSERT INTO weather VALUES ('Berkeley', 45, 53, 0.0, '1994-11-28');
+			ERROR:  insert or update on table "weather" violates foreign key constraint "weather_city_fkey"
+			DETAIL:  Key (city)=(Berkeley) is not present in table "cities".
+			* To fix this need to insert first into cities table because it reference to weather table.
+
