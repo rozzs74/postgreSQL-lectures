@@ -369,3 +369,42 @@ Chapter 3 (Advanced Features)
 		--> Example
 			SELECT salary, sum(salary) OVER () FROM empsalary;
 			SELECT salary, sum(salary) OVER (ORDER BY salary) FROM empsalary;
+	VI. Inheritance 
+		--> Inheritance is a concept from object-oriented databases. It opens up interesting new posibilities of database design.
+		--> Example
+			A. Normal way 
+				CREATE TABLE capitals (
+					name       text,
+					population real,
+					altitude   int,    -- (in ft)
+					state      char(2)
+				);
+				CREATE TABLE non_capitals (
+					name       text,
+					population real,
+					altitude   int     -- (in ft)
+				);
+				CREATE VIEW cities AS
+				SELECT name, population, altitude FROM capitals
+					UNION
+				SELECT name, population, altitude FROM non_capitals;
+			B. Inheritance way (better solution is this):
+				CREATE TABLE cities (
+					name 		text,
+					population  real,
+					altitude 	int
+				);
+				CREATE TABLE capitals (
+					state char(2),
+				) INHERITS (cities);
+			--> In this case, a row of capitals inherits all columns (name, populate, altitude) from its parent cities.
+			--> In PostgreSQL, a table can inherit from zero or more other tables.
+			--> Example a query finds names of all cities including state capitals
+				SELECT name, altitude FROM cities WHERE altitude > 500;
+			--> Since capitals inherit all of columns in cities the result set for this query are combined capitals and cities.
+			--> Example a query that finds all the cities that are not state capitals
+				SELECT name, altitude FROM ONLY cities WHERE altitude > 500;
+			--> The output for this query is for parent only.
+			--> Here the ONLY before cities indicates that the query should over only the cities table, and not tables below cities
+				in the inheritance hierarchy.
+			--> SELECT, UPDATE and DELETE  supports this ONLY clause notation.
