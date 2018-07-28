@@ -453,5 +453,26 @@ Chapter 4 SQL Syntax
 			--> Example
 				UPDATE "my_table" SET "a" = 5;
 			--> Quoted identifiers can contain any character, except the character with code zero.
-
+		C. Constants
+			--> There are three kinds of implicitly-typed constants in PostgreSQL
+				1. strings
+				2. bit strings
+				3. numbers
+			--> Constants can also specified with explicit types, which can enable more accurate representation and more efficient
+				handling by the system.
+			I. String Constants
+				--> A string contstant in SQL is an arbitrary sequence of characters bounded by single quotes (').
+				--> Example
+					'This is a string.'
+				--> To include a single-quote character within a string constant, write two adjacent single quotes.
+					'Dianne''s hores'.
+				--> Two string constants that are only separated by whitespace with at least one newline are concatenated and 
+					effectively treated as if the string had been written as one constant.
+				--> Example
+					SELECT 'foo' 'bar';
+					is equivalent to 
+					SELECT 'foobar';
+					SELECT 'foo'  'bar'; - Not a valid syntax.
+			II. String Constants with C-style Escapes
+				--> PostgreSQL also accepts "escape" string constants, which are an extension to the SQL standard.
 			
