@@ -270,4 +270,79 @@ Chapter 3 (Advanced Features)
 			ERROR:  insert or update on table "weather" violates foreign key constraint "weather_city_fkey"
 			DETAIL:  Key (city)=(Berkeley) is not present in table "cities".
 			* To fix this need to insert first into cities table because it reference to weather table.
-
+	IV. Transactions
+		--> A transaction is a unit of work that is performed against a database.
+		--> Transactions are units or sequences of work accomplished in a logical order, whether in a manual fashion by a user or automatically by some sort of a database program.
+		--> A transaction is the propagation of one or more changes to the database. 
+			For example, if you are creating a record, updating a record, or deleting a record from the table, then you are performing transaction on the table. 
+			It is important to control transactions to ensure data integrity and to handle database errors.
+		--> Properties of transaction
+			1. Atomicity - Ensures that all operations within the work unit are completed successfully; otherwise, the transaction is aborted at the point of failure and previous operations are rolled back to their former state.
+			2. Consistency - Ensures that the database properly changes states upon a successfully committed transaction.
+			3. Isolation - Enables transactions to operate independently of and transparent to each other.
+			4. Durability -  Ensures that the result or effect of a committed transaction persists in case of a system failure.
+		--> Transaction control 
+			1. BEGIN - to start transaction.
+			2. COMMIT - to end transaction.
+			3. ROLLBACK - to rollback the changes.
+		--> Transactions - are a fundamental concept of all database systems. The essential point of a transaction is that 
+			it bundles multiple steps into single, all-or-nothing operation. The intermediate states between the steps 
+			are not visible to other concur transactions, and if some failure occurs that prevents the transaction 
+			from completing, the none of the steps affect the database at all.
+		--> A transaction is said to be atomic from the point of view of other transactions it either happens completely or 
+			not at all.
+		--> Example
+			UPDATE accounts SET balance = balance - 100.00
+    			WHERE name = 'Alice';
+			UPDATE branches SET balance = balance - 100.00
+    			WHERE name = (SELECT branch_name FROM accounts WHERE name = 'Alice');
+			UPDATE accounts SET balance = balance + 100.00
+    			WHERE name = 'Bob';
+			UPDATE branches SET balance = balance + 100.00
+   				 WHERE name = (SELECT branch_name FROM accounts WHERE name = 'Bob');
+		--> The details of these commands are not important here; the important point is that there are several separate updates 
+			involved to accomplish this rather simple operation.
+		--> We also want a guarantee that once a transaction is completed and acknowledged by the database system, it has 
+			been permanently recorded and won't be lost even if a crash ensues shortly thereafter.
+		--> Another important property of transactional database is closely related to the notion of atomic updates:
+			when multiple transactions are running concurrently, each one should not be able to see the incomplete changes 
+			made by others.
+		--> Transaction is being used for banking transaction.
+		--> Example 
+			BEGIN;
+				<SQL STATEMENT>
+			COMMIT;
+			BEGIN;
+				UPDATE accounts SET balance = balance - 100.00
+					WHERE name = 'Alice';
+			-- etc etc 
+			COMMIT;
+		--> If the balance went negative value, we can issue the command ROLLBACK instead of COMMIT, and all our updates so 
+			far will be canceled.
+		--> If you do not issue a BEGIN command in the statement, each invidual statement has an 
+			implicit BEGIN and (if successful) COMMIT wrapped around it.
+		--> A group of statements surrounded by BEGIN and COMMIT is sometimes called transactional block.
+		--> It's possible to control the statement in a transaction in more granular (appearing) fashion
+			through the use of savepoints.
+		--> Savepoints - allow you to selectively discard parts of the transaction, while committing the rest.
+		--> After defining a savepoint with SAVEPOINT, you can if needed roll back to the savepoint with 
+			ROLLBACK TO. All the transaction's database changes between difning the savepoint and rolling back 
+			to it are discarded, but changes earlier thatn the savepoint are kept.
+		--> After rolling back to a savepoint, it continues to be defined. Meaning if you came back to a savepoint the current state 
+			will be based on it. So you can roll back to it several times.
+		--> All this thing is happening within transactional block, so nont of it is visible to other database sessions.
+		--> When and if you commit the transactional block, the committed actions become visible as a unit to other sessions.
+		--> While the rolled-back actions never become visible at all.
+		--> Example
+			BEGIN;
+				UPDATE accounts SET balance  = balance - 100.00 WHERE name = 'Alice';
+			SAVEPOINT my_savepoint;
+				UPDATE accounts SET balance = balance + 100.00 WHERE name = 'Bob';
+				# OOPS forget that and use Wally's account.
+			ROLLBACK TO my_savepoint;
+				UPDATE accounts SET balance = balance + 100.00 WHERE name = 'Walley';
+			COMMIT;
+		--> This example is of course oversimplified but there's a lot of control possible in a transaction block 
+			through the use of savepoints. 
+		--> Moreover ROLLBACK TO is the only way to regain control of transaction block that was put in aborted state
+			by the sytem due to an error, short of rolling it back completely and starting again.
