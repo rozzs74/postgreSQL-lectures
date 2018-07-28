@@ -408,3 +408,50 @@ Chapter 3 (Advanced Features)
 			--> Here the ONLY before cities indicates that the query should over only the cities table, and not tables below cities
 				in the inheritance hierarchy.
 			--> SELECT, UPDATE and DELETE  supports this ONLY clause notation.
+Chapter 4 SQL Syntax
+	I. Lexical structure	
+		A. Introduction
+			--> SQL input consists of a sequence of commands.
+			--> A command is composed of a sequence of tokens, terminated by a semicolon (";").
+			--> The end of the input stream also terminates a command.
+			--> Which tokens are valid depends on the syntax of the particular command.
+			--> Tokens - in SQL is a sequence or group of SQL characters separated by comments, whitespace or oher SQL special character.
+			--> Tokens - The basic syntactical units of the SQL language are called tokens. A token consists of one or more characters of which none are blanks, control characters, or characters within a string constant or delimited identifier.
+			--> A token can be
+				1. key word  such as SELECT or INSERT
+				2. Identifier - identify names of tables, columns or other database objects. For example MY_TABLE, A
+				3. Quoted identifier 
+				4. literal (or constant) or a special character symbol. Such as literal (123, 'John') special character ((), =)
+			--> Tokens are normally separated by whitespace (space, tab, newline)
+			--> Example the ff syntactically valid SQL input
+				SELECT * FROM MY_TABLE;
+				UPDATE MY_TABLE SET A = 5;
+				INSERT INTO MY_TABLE VALUES (3, 'hi there');
+			--> Additionally, comments can occur in SQL input. Ther are not tokens, they are effectively equivalent to whitespace.
+			--> The SQL 
+		B. Identifiers and Key Words
+			--> Tokens such as SELECT, UPDATE, or VALUES in the example above are example of key words. In which words that 
+				have fixed a meaning in the SQL language.
+			--> The tokens MY_TABLE and A are example of identifiers because they identify name of tables, columns or database objects depending 
+				on the command they are used in.
+			--> SQL identifiers and key words must begin with 
+				1. letter (a-z, but also letters with diacritical marks and non-Lating letters)
+				2. underscore _
+				3. digits (0-9)
+			--> Example
+				UPDATE MY_TABLE SET A = 5;
+				- can be equivalent be written as 
+				uPDaTE my_TabLE SeT a = 5;
+			--> A convention often used is to write key words in upper case and names in lower case.
+			--> Example
+				UPDATE my_table SET a = 5;
+			--> There is second kind of identifier: the delimited or quoted identifier. It is formed by enclosing 
+				an arbitrary sequence of characters in double-quotes (""). 
+			--> A delimited identifier is always an identifier, never a key word.So "select" could be used to refer to column or 
+				table named "select", whereas an unqouted select would be taken as a key word and would therefore provoke a parse error 
+				when used where a table or column name is expected.
+			--> Example
+				UPDATE "my_table" SET "a" = 5;
+			--> Quoted identifiers can contain any character, except the character with code zero.
+
+			
