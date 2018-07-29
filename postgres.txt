@@ -565,3 +565,14 @@ Chapter 4 SQL Syntax
 				15. |	- Bitwise OR
 				16. ` 	- String
 				17. ? 	- ternary
+		E. Special Characters 
+			1. $ 	- used to represent positional parameter in the body in other context dollar sign can be part of identifier.
+			2. () 	- usual meaning is to group expressions and enforce precedence. In some cases it is required as part of 
+						fixed syntax of particular SQL command.
+			3. [] 	- used to select elements of an array.
+			4. , 	- are used in some syntactical constructs to separate elements of a list.
+			5. ; 	- terminates an SQL command.
+			6. : 	- is used to slices from arrays
+			7. * 	- is used some contexts to denote all of the fields of a table row or composite value.
+			8. . 	- used in numeric constants, and to separate schema, table, column names.
+			
