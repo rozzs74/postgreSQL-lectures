@@ -475,4 +475,73 @@ Chapter 4 SQL Syntax
 					SELECT 'foo'  'bar'; - Not a valid syntax.
 			II. String Constants with C-style Escapes
 				--> PostgreSQL also accepts "escape" string constants, which are an extension to the SQL standard.
-			
+				--> An escape string constant is specified by writing the letter E (upper or lower case) just before 
+					the opening single quote, e.g., E'foo'.
+				--> Example
+					INSERT INTO customer (name, price) VALUES (E'Royce', 1);
+					INSERT INTO cities2 (name, population, altitude) VALUES (E'Antipolo', 5000, 201);
+				--> Within an escape string, a backlash character (\) begins a C-like backlash escape sequence.
+				--> Backlash Escape Sequences
+					1. \b  	- backspace 
+					2. \f 	- form feed 
+					3. \n 	- new line 
+					4. \r 	- carriage return
+					5. \t 	- tab
+			III. String Constants with Unicode Escapes
+				--> PostgreSQL also supports another type of escape syntax for the strings that allows specifying arbitrary 
+					Unicode characters by code point.
+				--> A Unicode espace string constants starts with U& (upper or lower case letter U followed by ampersand).
+				--> Example
+					U&'foo'.
+			IV. Dollar-quoted String Constants
+				--> To allow more readable queries in such situations, PostgreSQL provides another way called a doubled
+					'dollar quoting', to write string constants.
+				--> A dollar-quoted string constant consists of dollar sign ($), an optional "tag", another dollar sign,
+					an arbitrary sequence of characters.
+				--> Example
+					'Dianne''s horse'. (VALID)
+					"Dianne's horse" (VALID)
+					$$Dianne's horse$$ (VALID)
+					$<tagname>$Dianne's hores $<tagname>$ (VALID SYNTAX)
+					$boom$Dianne's horse$boom$;
+			V. Bit-string Constants
+				--> Bit-string constants look like regular string constants with a B(upper or lower case) immediately
+					before the opening quote.
+				--> Bit strings are strings of 1's and 0's. They can be used to store or visualize bit masks.
+				--> Example
+					B'1001'
+					CREATE TABLE test (a BIT(3), b BIT VARYING(5));
+					INSERT INTO test VALUES (B'101', B'00');
+					INSERT INTO test VALUES (B'10', B'101');
+					INSERT INTO cities2 (name, population, altitude) VALUES (B'0111001001101111011110010110001101100101', 5000, 201);
+				--> The only characters allowed within bit-string constants are 0 and 1.
+				--> No space in binary sequence.
+				--> Alternatively, bit-string constants can be specified in hexadecimal notation
+				--> Example
+					X'1FF'.
+				--> This notation is equivalent to a bit-string constant with four binary digits for each hexadecimal digit.
+			VI. Numeric Constants
+				--> Digits is one or more decimal digits (0 through 9).
+				--> There cannot be any spaces or other characters embedded in the constant.
+				--> Example
+					42
+					3.5
+					4.
+					.001
+					5e2
+					1.925e-3
+				--> Numeric constants contains neither decimal point nor an exponent.
+				--> Numeric types 
+					1. smallint 
+					2. integer
+					3. bigint 
+					4. decimal
+					5. numeric 
+					6. real 
+					7. double precision 
+					8. serial 
+					9. bigserial
+			VII. Constants of other types 
+				--> The string constants text is passed to the inut conversion routine for the type called type.
+				--> Example
+					typename ('string')
