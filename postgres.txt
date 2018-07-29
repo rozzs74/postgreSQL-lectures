@@ -584,3 +584,10 @@ Chapter 4 SQL Syntax
 				 * with nesting: / * nested block comment */ 
 				 */
 			--> A comment is removed from the input stream before further syntax analysis and is effectively replaced by whitespace.
+		G. Operator Precedence 
+			--> Most operators have the same precedence and are left-associative.
+			--> Example
+				SELECT 5 ! - 6;
+				will be parsed as 
+				SELECT 5 ! (-6);
+				
