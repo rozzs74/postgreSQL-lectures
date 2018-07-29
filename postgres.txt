@@ -590,4 +590,27 @@ Chapter 4 SQL Syntax
 				SELECT 5 ! - 6;
 				will be parsed as 
 				SELECT 5 ! (-6);
-				
+	II. Value Expressions
+		--> are used in variety of contexts
+		--> such as in the target list of the SELECT, INSERT, UPDATE commands.
+		--> The result of a value expression is sometimes called a scalar, to distinguish it from the result of table expression.
+		--> Value expression are therefore also called scalart expression (or even simply expression).
+		--> The expression syntax allows the calculation of values from primitive parts using 
+			arithmetic, logical, set and other operations.
+		--> A value expression is one of the ff .
+			1. A constant or literal value - string constants
+			2. A column reference
+			3. A positional parameter reference, in the body of a function definition or prepared statement
+			4. A subscripted expression
+			5. A field selection expression
+			6. An operator invocation
+			7. A function call
+			8. An aggregate expression
+			9. A window function call
+			10. A type cast
+			11. A collation expression
+			12. A scalar subquery
+			13. An array constructor
+			14. A row constructor
+			15. Another value expression in parentheses (used to group subexpressions and override precedence)
+
