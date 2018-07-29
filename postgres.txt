@@ -896,4 +896,137 @@ Chapter 5 (Data Definition)
 		--> Attempting to drop a table that does not exist is an error. If that command execute it ignores errror.
 		--> DROP TABLE IF EXISTS;
 		--> DROP TABLE products IF EXISTS;
-		
+	II. Default Values 
+		--> A column can be assigned a default value.
+		-->  When a new row is created and no values are specified for some of the columns, 
+			 those columns will be filled with their respective default values.
+		-->  If no default value is declared explicitly, the default value is the null value.
+		--> This usually makes sense because a null value can be considered to represent unknown data.
+		--> Example
+			CREATE TABLE products (
+				product_no integer,
+				name text,
+				price numeric DEFAULT 9.99
+			);
+		--> The default value can be an expression, which will be evaluated whenever the default value is inserted (not when the table is created).
+	III.Constraints
+		--> Data types are a way to limit the kind of data that can be stored in a table.
+		--> The constraint they provide is too coarse(rough / harsh).
+		--> Constraints give you as much control over the data in your tables as you wish.
+		--> If a user attempts to store data in a column that would violate a constraint, an error is raised.
+		--> This applies even if the value came from the default value definition.
+		--> Concept
+		--> For example, a column containing a product price should probably only accept positive values.
+			But there is no standard data type that accepts only positive numbers.
+			Another issue is that you might want to constrain column data with respect to other columns or rows.
+			For example, in a table containing product information, there should be only one row for each product number.
+		A. Check Constraints
+			--> A check constraint is the most generic(not specific) constraint type.
+			--> It allows you to specify that the value in a certain column must satisfy a Boolean (truth-value) expression. 
+			--> Example (IMPLICIT WAY)
+				CREATE TABLE products (
+					product_no integer,
+					name text,
+					price numeric CHECK (price > 0)
+				);
+				INSERT into public.products (product_no, name, price) VALUES (1, 'Shampoo', 1); (This is valid query)
+				OUTPUT:
+					INSERT 0 1
+				INSERT into public.products (product_no, name, price) VALUES (1, 'Shampoo', -1); (Invalid because the price value didn't meet the constrain);
+				OUTPUT:
+					ERROR:  new row for relation "products" violates check constraint "products_price_check"	
+					DETAIL:  Failing row contains (1, Shampoo, -1).
+			-->  A check constraint consists of the key word CHECK followed by an expression in parentheses.
+			-->  The check constraint expression should involve the column thus constrained, 
+				 otherwise the constraint would not make too much sense.
+			--> You can also give the constraint a separate name. 
+				This clarifies error messages and allows you to refer to the constraint when you need to change it.
+			--> Example (Explicit)
+				CREATE TABLE products (
+					product_no integer,
+					name text,
+					price numeric CONSTRAINT positive_price CHECK (price > 0)
+				);
+			--> So, to specify a named constraint, use the key word CONSTRAINT followed by an identifier followed by the constraint definition.
+			--> If you don't specify a constraint name in this way, the system chooses a name for you.
+			--> A check constraint can also refer to several columns. 
+				Say you store a regular price and a discounted price, 
+				and you want to ensure that the discounted price is lower than the regular price:
+			--> Example
+				CREATE TABLE products (
+					product_no integer,
+					name text,
+					price numeric CHECK (price > 0),
+					discounted_price numeric CHECK (discounted_price > 0),
+					CHECK (price > discounted_price)
+				);
+				INSERT INTO public.products (product_no, name, price, discounted_price) VALUES (1, 'Book', 20.00, 10.00); (VALID query because I meet the constrain)
+				OUTPUT: 
+					INSERT 0 1
+				INSERT INTO public.products (product_no, name, price, discounted_price) VALUES (2, 'Shirt', 20.00, 30.00); (INVALID violating table constrain third one )
+				OUTPUT:
+					ERROR:  new row for relation "products" violates check constraint "products_check"
+					DETAIL:  Failing row contains (2, Shirt, 20.00, 30.00)
+			--> The first two constraints are being attached to column, the third constraint is for table constraint 
+				due to written separately from any one column definition.
+			--> Column constraints can also be written as table constraints
+			--> Reverse is not necessarily possible, since column constraint is supposed 
+				to refer to only column attached to.
+			--> The example above can be also written in this 
+				CREATE TABLE products (
+					product_no integer,
+					name text,
+					price numeric,
+					CHECK (price > 0),
+					discounted_price numeric,
+					CHECK (discounted_price > 0),
+					CHECK (price > discounted_price)
+				);
+				CREATE TABLE products (
+    				product_no integer,
+    				name text,
+    				price numeric CHECK (price > 0),
+    				discounted_price numeric,
+    				CHECK (discounted_price > 0 AND price > discounted_price)
+				);
+			--> It's a matter of taste.
+			--> Names can be assigned to table constraints in the same way as column constraints.
+			--> Example 
+				CREATE TABLE products (
+    				product_no integer,
+    				name text,
+    				price numeric,
+    				CHECK (price > 0),
+    				discounted_price numeric,
+    				CHECK (discounted_price > 0),
+    				CONSTRAINT valid_discount CHECK (price > discounted_price)
+				);
+		B. Not-Null Constraints
+			--> A not-null constraint simply specifies that a column must not assume the null value.
+			--> Example
+				CREATE TABLE products (
+    				product_no integer NOT NULL,
+    				name text NOT NULL,
+    				price numeric
+				);
+			--> A not-null constraint is always written as a column constraint.
+			-->  A not-null constraint is functionally equivalent to creating a check constraint CHECK (column_name IS NOT NULL), 
+				 but in PostgreSQL creating an explicit not-null constraint is more efficient.
+			--> Example
+				CREATE TABLE products (
+    				product_no integer NOT NULL,
+    				name text NOT NULL,
+    				price numeric NOT NULL CHECK (price > 0)
+				);
+			--> The order doesn't matter. It does not necessarily determine in which order the constraints are checked.
+			--> The NOT NULL constraint has an inverse: the NULL constraint.
+			--> This does not mean that the column must be null, which would surely be useless.
+			--> The NULL constraint is not present in the SQL standard and should not be used in portable applications. 
+				(It was only added to PostgreSQL to be compatible with some other database systems.)
+			--> Example
+				CREATE TABLE products (
+    				product_no integer NULL,
+    				name text NULL,
+    				price numeric NULL
+				);
+			--> TIP : In most database designs the majority of columns should be marked not null.
