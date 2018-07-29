@@ -558,7 +558,7 @@ Chapter 4 SQL Syntax
 				8. ~	- Bit wise NOT
 				9. ! 	- Not 
 				10. @ 	- Variable names
-				11. #	- Comment
+				11. #	- ?
 				12. %	- Modulo (remainder)
 				13. ^ 	- Bitwise XOR
 				14. &   - Bitwise AND 
@@ -575,4 +575,12 @@ Chapter 4 SQL Syntax
 			6. : 	- is used to slices from arrays
 			7. * 	- is used some contexts to denote all of the fields of a table row or composite value.
 			8. . 	- used in numeric constants, and to separate schema, table, column names.
-			
+		F. Comments
+			--> A comment is a sequence of characters beginning with double dashes and extending to the end of line.
+			--> Example
+				-- This is a standard SQL comment 
+			--> C-style block comments
+				/* multiline comment 
+				 * with nesting: / * nested block comment */ 
+				 */
+			--> A comment is removed from the input stream before further syntax analysis and is effectively replaced by whitespace.
