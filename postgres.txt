@@ -545,3 +545,23 @@ Chapter 4 SQL Syntax
 				--> The string constants text is passed to the inut conversion routine for the type called type.
 				--> Example
 					typename ('string')
+
+		D. Operators
+			--> An operator name is a sequence of up to NAMEDATALEN-1
+				1. + 	- Addition
+				2. -  	- Substraction 
+				3. *	- Multiplication
+				4. / 	- Division 
+				5. <	- Less than 
+				6. > 	- Greater than 
+				7. = 	- Assignment 
+				8. ~	- Bit wise NOT
+				9. ! 	- Not 
+				10. @ 	- Variable names
+				11. #	- Comment
+				12. %	- Modulo (remainder)
+				13. ^ 	- Bitwise XOR
+				14. &   - Bitwise AND 
+				15. |	- Bitwise OR
+				16. ` 	- String
+				17. ? 	- ternary
