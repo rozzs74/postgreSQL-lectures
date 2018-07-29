@@ -612,113 +612,254 @@ Chapter 4 SQL Syntax
 			12. A scalar subquery
 			13. An array constructor
 			14. A row constructor
-			15. Another value expression in parentheses (used to group subexpressions and override precedence)
-	III. Column references 
-		--> A column can be referenced in form 
-			correlation.columnname
-		--> correlation - is the name of a table (possibly qualified with a schema name), or an alias for a table 
-			defined by means of a FROM clause. The correlation name and separating dot can be omitted 
-			if the column name is unique accorss all the tables being used in the query.
-	IV. Positional Parameters 
-		--> A positional parameter reference is used to indicate a value that is supplied externally
-			to an SQL statement. Parameters are used in SQL function definitions and in prepared queries.
-		--> Example
-			$number 
-		--> Consider the definition of a function, dept 
-			CREATE FUNCTION dept(text) RETURNS dept 
-				AS $$ SELECT * FROM dept WHERE name = $1 $$
-				LANGUAGE SQL;
-		--> Here the $1 references the value of the first function argument whenever the function is invoked.
-		--> Positional parameters preceding $, $1,$2,$3 and so on.
-	V. Subscripts
-		--> If an expression yield a value of an array tye, then a specific element of the array value 
-			can be extracted by writing.
-		--> Example
-			expression[subscript]
-		--> or multiple adjacent elements (an "array slice")
-		--> Example
-			expression[lower_subscript:upper_subscript]
-		--> Here the brackers [] are meant to appear literally Each subscript is itself an expression, which must yield 
-			an integer value.
-	VI. Field Selection
-		--> If an expression yields a value of composite type (row type), then a specific field of the 
-			row can be extracted by writing 
-		--> Example
-			expression.fieldname
-			mytable.mycolumn
-			$1.somecolumn
-	VII. Operator Invocations 
-		--> There are three possible syntaxes for an operator invocation
-			expression operator expression (binary infix operator)
-			operator expression (unary prefix operator)
-			expression operator (unary postfix operator)
-		--> Where the operator token follows the syntax or is one of the key words AND, OR and NOT
-		--> Example
-			OPERATOR(schema.operatorname)
-	VIII. Functions Calls
-		--> The syntax for a function call is the name of a function (possibly qualified with a schema name)
-		--> function_name([express])	
-		--> Example
-			sqrt(2)
-	IX. Aggregate Expressions
-		--> An aggregate expression represents the application of an aggregate function across the rows selected by 
-			query. An aggregate function reduces multiple inputs to a single output value.
-	X. Window Function Calls
-		--> A window function call represents the application of an aggregate-like function over some portion of the rows selected by 
-			query.
-	XI. Type Casts
-		--> A type cast specifies a conversion from one data type to another.
-		--> CAST (expression AS type)
-		--> expression::type
-	XII. Collation Expressions
-		--> The COLLATE clause overrides the collation of an expression.
-		--> Example
-			expr COLLATE collation
-	XIII. Scalar Subqueries
-		--> A scalar subquery is an ordinary SELECT query in parentheses that returns exactly one row with one column.
-		--> Example
-			SELECT name, (SELECT max(pop) FROM cities WHERE cities.state = states.name) FROM states;
-	XIV: Array Constructors
-		--> An array constructor is an expression that builds an array value using values for its member elements.
-		--> A simple array constructor consists of the keyword ARRAY.
-		--> Example
-			SELECT ARRAY[1,2,3+4];
-			SELECT ARRAY[1,2,22.7]::integer[];
-			SELECT ARRAY[ARRAY[1,2], ARRAY[3,4]];
-			SELECT ARRAY[[1,2],[3,4]];
-			CREATE TABLE arr(f1 int[], f2 int[]);
-			INSERT INTO public.arr (f1, f2) VALUES (ARRAY[[1,2], [3,4]], ARRAY[[5,6], [7,8]]);
-			SELECT ARRAY[]::integer[];
-				--> You can construct an empty array, but since it's impossible to have an array with no type, 
-					you must explicitly cast your empty array to the desired type.
-			SELECT ARRAY(SELECT ARRAY[i, i*2] FROM generate_series(1,5) AS a(i));
-				--> Its possible to construct an array from the results of a subquery.
-	XV: Row Constructors
-		--> A row constructor is an expression that builds a row value (also called a composite value)
-			using values for its member fields. 
-		--> A row constructor consists of the key word ROW, a left parenthesis, zero or more expressions 
-		--> Example
-			SELECT ROW (1,2.5, 'this is a test');
-		--> The key word ROW is optional when there is more the one expression in the list.
-		--> By default the value created by ROW expression is of an anonymous record type.
-		--> Example
-			CREATE TABLE mytable(f1 int, f2 float, f3 text);
-			CREATE FUNCTION getf1(mytable) RETURNS int AS 'SELECT $1.f1' LANGUAGE SQL;
-			SELECT getf1(ROW(1,2.5,'this is a test'));
-			-
-			CREATE TYPE myrowtype AS (f1 int, f2 text, f3 numeric);
-			CREATE FUNCTION getf1(myrowtype) RETURNS int AS 'SELECT $1.f1' LANGUAGE SQL;
-			SELECT getf1(ROW(1,2.5,'this is a test')::mytable);
-			SELECT getf1(CAST(ROW(11, 'this is a test', 2.6) AS myrowtype));
-		--> Also it is possible to compare two row values or test a row IS NULL or IS NOT NULL?.
-		--> Example
-			SELECT getf1(CAST(ROW(11, 'this is a test', 2.6) AS myrowtype));
-	XVI. Expression Evaluation Rules
-		--> The order of evaluation of subexpression is not defined.
-		--> In particular, the inputs of an operator or function are not necessarily evaluated left-to-right
-		--> SELECT true OR somefunc();
-		--> SELECT somefunc() OR true;
-		--> A CASE construct used in this fashion will defeat optimization attemps, so it should only be done 
-			when necessary.
-		--> Example
-			SELECT CASE WHEN min(employees) > 0 THEN avg(expenses / employees) END FROM departments;
+				15. Another value expression in parentheses (used to group subexpressions and override precedence)
+		A. Column references 
+			--> A column can be referenced in form 
+				correlation.columnname
+			--> correlation - is the name of a table (possibly qualified with a schema name), or an alias for a table 
+				defined by means of a FROM clause. The correlation name and separating dot can be omitted 
+				if the column name is unique accorss all the tables being used in the query.
+		B. Positional Parameters 
+			--> A positional parameter reference is used to indicate a value that is supplied externally
+				to an SQL statement. Parameters are used in SQL function definitions and in prepared queries.
+			--> Example
+				$number 
+			--> Consider the definition of a function, dept 
+				CREATE FUNCTION dept(text) RETURNS dept 
+					AS $$ SELECT * FROM dept WHERE name = $1 $$
+					LANGUAGE SQL;
+			--> Here the $1 references the value of the first function argument whenever the function is invoked.
+			--> Positional parameters preceding $, $1,$2,$3 and so on.
+		C. Subscripts
+			--> If an expression yield a value of an array tye, then a specific element of the array value 
+				can be extracted by writing.
+			--> Example
+				expression[subscript]
+			--> or multiple adjacent elements (an "array slice")
+			--> Example
+				expression[lower_subscript:upper_subscript]
+			--> Here the brackers [] are meant to appear literally Each subscript is itself an expression, which must yield 
+				an integer value.
+		D. Field Selection
+			--> If an expression yields a value of composite type (row type), then a specific field of the 
+				row can be extracted by writing 
+			--> Example
+				expression.fieldname
+				mytable.mycolumn
+				$1.somecolumn
+		E. Operator Invocations 
+			--> There are three possible syntaxes for an operator invocation
+				expression operator expression (binary infix operator)
+				operator expression (unary prefix operator)
+				expression operator (unary postfix operator)
+			--> Where the operator token follows the syntax or is one of the key words AND, OR and NOT
+			--> Example
+				OPERATOR(schema.operatorname)
+		F. Functions Calls
+			--> The syntax for a function call is the name of a function (possibly qualified with a schema name)
+			--> function_name([express])	
+			--> Example
+				sqrt(2)
+		G. Aggregate Expressions
+			--> An aggregate expression represents the application of an aggregate function across the rows selected by 
+				query. An aggregate function reduces multiple inputs to a single output value.
+		H. Window Function Calls
+			--> A window function call represents the application of an aggregate-like function over some portion of the rows selected by 
+				query.
+		I. Type Casts
+			--> A type cast specifies a conversion from one data type to another.
+			--> CAST (expression AS type)
+			--> expression::type
+		J. Collation Expressions
+			--> The COLLATE clause overrides the collation of an expression.
+			--> Example
+				expr COLLATE collation
+		K. Scalar Subqueries
+			--> A scalar subquery is an ordinary SELECT query in parentheses that returns exactly one row with one column.
+			--> Example
+				SELECT name, (SELECT max(pop) FROM cities WHERE cities.state = states.name) FROM states;
+		L: Array Constructors
+			--> An array constructor is an expression that builds an array value using values for its member elements.
+			--> A simple array constructor consists of the keyword ARRAY.
+			--> Example
+				SELECT ARRAY[1,2,3+4];
+				SELECT ARRAY[1,2,22.7]::integer[];
+				SELECT ARRAY[ARRAY[1,2], ARRAY[3,4]];
+				SELECT ARRAY[[1,2],[3,4]];
+				CREATE TABLE arr(f1 int[], f2 int[]);
+				INSERT INTO public.arr (f1, f2) VALUES (ARRAY[[1,2], [3,4]], ARRAY[[5,6], [7,8]]);
+				SELECT ARRAY[]::integer[];
+					--> You can construct an empty array, but since it's impossible to have an array with no type, 
+						you must explicitly cast your empty array to the desired type.
+				SELECT ARRAY(SELECT ARRAY[i, i*2] FROM generate_series(1,5) AS a(i));
+					--> Its possible to construct an array from the results of a subquery.
+		M: Row Constructors
+			--> A row constructor is an expression that builds a row value (also called a composite value)
+				using values for its member fields. 
+			--> A row constructor consists of the key word ROW, a left parenthesis, zero or more expressions 
+			--> Example
+				SELECT ROW (1,2.5, 'this is a test');
+			--> The key word ROW is optional when there is more the one expression in the list.
+			--> By default the value created by ROW expression is of an anonymous record type.
+			--> Example
+				CREATE TABLE mytable(f1 int, f2 float, f3 text);
+				CREATE FUNCTION getf1(mytable) RETURNS int AS 'SELECT $1.f1' LANGUAGE SQL;
+				SELECT getf1(ROW(1,2.5,'this is a test'));
+				-
+				CREATE TYPE myrowtype AS (f1 int, f2 text, f3 numeric);
+				CREATE FUNCTION getf1(myrowtype) RETURNS int AS 'SELECT $1.f1' LANGUAGE SQL;
+				SELECT getf1(ROW(1,2.5,'this is a test')::mytable);
+				SELECT getf1(CAST(ROW(11, 'this is a test', 2.6) AS myrowtype));
+			--> Also it is possible to compare two row values or test a row IS NULL or IS NOT NULL?.
+			--> Example
+				SELECT getf1(CAST(ROW(11, 'this is a test', 2.6) AS myrowtype));
+		N. Expression Evaluation Rules
+			--> The order of evaluation of subexpression is not defined.
+			--> In particular, the inputs of an operator or function are not necessarily evaluated left-to-right
+			--> SELECT true OR somefunc();
+			--> SELECT somefunc() OR true;
+			--> A CASE construct used in this fashion will defeat optimization attemps, so it should only be done 
+				when necessary.
+			--> Example
+				SELECT CASE WHEN min(employees) > 0 THEN avg(expenses / employees) END FROM departments;
+	
+	III. Calling Functions
+		--> PostgreSQL allows functions that have named parameters to be called using either 
+			positional or named notation
+		--> Named notation is especially useful for functions that have a large number of parameters, 
+			since it makes the associations between parameters and actual arguments more explicit and reliable.
+		--> Positional notation a function call is written with its argument values in the same order as they 
+			are defined in the function declaration.
+		--> Mixed notation PostgreSQL also supports which combines positional and named notation.
+		--> In this case position parameters are written first and named parameters appear after them.
+		--> Example is the usage of all three notations
+			CREATE FUNCTION concat_lower_or_upper(a text, b text, uppercase boolean DEFAULT false)
+				RETURNS text 
+				AS 	
+				$$
+					SELECT CASE 
+							WHEN $3 THEN UPPER($1 || ' ' || $2)
+							ELSE LOWER ($1 || ' ' || $2)
+							END;
+				$$
+				LANGUAGE SQL IMMUTABLE STRICT;
+				OUTPUT:
+				CREATED FUNCTION
+
+			A. Using Positional Notation
+				--> Positional notation is the tradional mechanism for passing arguments to functions in PostgreSQL.
+				--> Example
+					SELECT concat_lower_or_upper('Hello', 'World', true);
+					OUTPUT:
+						concat_lower_or_upper
+					    -----------------------
+						HELLO WORLD
+						(1 row)
+					SELECT concat_lower_or_upper('hello', 'world');
+					OUTPUT:
+						concat_lower_or_upper
+					    -----------------------
+						hello world
+						(1 row)
+				--> In positional notation, arguments can be omitted from right to left so long as they have defaults.
+			B. Using Named Notation
+				--> In named notation, each argument's name is specified => to separate it from the argument expression.
+				--> Example
+					SELECT concat_lower_or_upper(a => 'Hello', b => 'World');
+					OUTPUT:
+						concat_lower_or_upper
+					    -----------------------
+						hello world
+						(1 row)
+				--> One advantage of named notation is that the arguments may be specified in any order.
+				--> Example
+					SELECT concat_lower_or_upper(a => 'Hello', b => 'World', uppercase => true);
+					OUTPUT:
+						concat_lower_or_upper
+					    -----------------------
+						HELLO WORLD
+						(1 row)
+					SELECT concat_lower_or_upper(a => 'Hello', uppercase => true, b => 'World');
+					OUTPUT:
+						concat_lower_or_upper
+					    -----------------------
+						hello world
+						(1 row)
+				--> An older syntax based on ":=" is  supported for backward compatibility
+					SELECT concat_lower_or_upper(a := 'Hello', uppercase := true, b := 'World');
+					OUTPUT:
+						concat_lower_or_upper
+					    -----------------------
+						HELLO WORLD
+			C. Using Mixed Notation
+				--> The mixed notation combines positional and named notation. However, as already mentioned, named arguments cannot 
+					precede positional arguments.
+				--> Example
+					SELECT concat_lower_or_upper('Hello', 'World', uppercase => true);
+					OUTPUT:
+						concat_lower_or_upper
+					    -----------------------
+						HELLO WORLD
+						(1 row)
+
+					CREATE FUNCTION try (a int, state boolean DEFAULT false)
+						RETURNS INT 
+						AS
+						$boom$
+							SELECT balance FROM accounts WHERE name = $1;
+							$1 || 100
+						$boom$
+						LANGUAGE SQL IMMUTABLE STRICT;
+					SELECT try (a := 'Walley', state := true);
+					OUTPUT: 
+						try
+						------
+						1100
+						(1 row)
+
+					CREATE OR REPLACE FUNCTION total_accounts(state boolean DEFAULT false)
+						RETURNS INT 
+						AS 
+						$boom$
+							DECLARE total INT;
+							BEGIN 
+								IF state = true THEN 
+									SELECT sum(balance) INTO total FROM accounts;
+									RETURN total;
+								ELSE 
+									SELECT ROW(0) INTO total;
+									RETURN total;
+								END IF;
+							END;
+						$boom$
+							LANGUAGE plpgsql;
+						OUTPUT:
+						total_accounts
+							----------------
+          				 1800
+						(1 row)
+					CREATE OR REPLACE FUNCTION primes (IN integer) RETURNS TEXT AS 
+						$BODY$
+							DECLARE
+								counter INTEGER = $1; 
+								primes int []; 
+								mycount int; 
+							BEGIN
+								WHILE counter != 0 LOOP 
+									mycount := count(primes); 
+									primes  := array_append(primes, mycount);
+									counter := counter - 1; 
+ 									raise notice '%', counter; -- log anything
+								END LOOP;
+								RETURN array_to_string(primes, ',');   
+							END;   
+						$BODY$ LANGUAGE plpgsql;
+					OUTPUT:
+						NOTICE:  2
+						NOTICE:  1
+						NOTICE:  0
+						primes
+						--------
+						0,1,1
+						(1 row)
+					SELECT primes(3);
