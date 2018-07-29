@@ -713,3 +713,12 @@ Chapter 4 SQL Syntax
 		--> Also it is possible to compare two row values or test a row IS NULL or IS NOT NULL?.
 		--> Example
 			SELECT getf1(CAST(ROW(11, 'this is a test', 2.6) AS myrowtype));
+	XVI. Expression Evaluation Rules
+		--> The order of evaluation of subexpression is not defined.
+		--> In particular, the inputs of an operator or function are not necessarily evaluated left-to-right
+		--> SELECT true OR somefunc();
+		--> SELECT somefunc() OR true;
+		--> A CASE construct used in this fashion will defeat optimization attemps, so it should only be done 
+			when necessary.
+		--> Example
+			SELECT CASE WHEN min(employees) > 0 THEN avg(expenses / employees) END FROM departments;
