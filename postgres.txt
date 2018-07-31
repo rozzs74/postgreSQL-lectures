@@ -1030,3 +1030,196 @@ Chapter 5 (Data Definition)
     				price numeric NULL
 				);
 			--> TIP : In most database designs the majority of columns should be marked not null.
+		C. Unique Constraints
+			--> Unique constraints ensure that the data contained in a column, or a group of columns, is unique among all the rows in the table.
+			--> Example
+				CREATE TABLE products (
+					product_no integer UNIQUE,
+					name text,
+					price numeric
+				);
+				INSERT INTO public.products2 (product_no, name, price) VALUES (1, 'Royce', 10);
+				INSERT 0 1
+				INSERT INTO public.products2 (product_no, name, price) VALUES (1, 'Royce', 10);
+				ERROR:  duplicate key value violates unique constraint "products2_product_no_key"
+				DETAIL:  Key (product_no)=(1) already exists.
+			--> When written as a column constraint 
+			--> Example
+				CREATE TABLE products (
+					product_no integer,
+					name text,
+					price numeric,
+					UNIQUE (product_no)
+				);
+			--> When written as a table constraint.
+			--> To define a unique constraint for a group of columns, write it as a table constraint with the column names separated by commas
+			--> Example
+				CREATE TABLE example (
+					a integer,
+					b integer,
+					c integer,
+					UNIQUE (a, c)
+				);
+			--> This specifies that the combination of values in the indicated columns is unique across the whole table, 
+				though any one of the columns need not be (and ordinarily isn't) unique.
+			--> You can assign your own name for unique constraint, in usual way 
+			--> Example
+				CREATE TABLE products (
+					product_no integer CONSTRAINT must_be_different UNIQUE,
+					name text,
+					price numeric
+				);
+			--> Adding a unique constraint will automatically create a unique B-tree index on the column or group of columns listed in the constraint.
+			--> In general, a unique constraint is violated if there is more than one row in the table where the values of all of the columns included in the constraint are equal.
+			--> However, two null values are never considered equal in this comparison. That means even in the presence of a unique constraint it is possible to store duplicate rows that contain a null value in at least one of the constrained columns.
+			--> This behavior conforms to the SQL standard, but we have heard that other SQL databases might not follow this rule. So be careful when developing applications that are intended to be portable.
+			--> Example
+				INSERT INTO public.products2 (product_no, name, price) VALUES (null, 'Royce', 10);
+				INSERT 0 1
+				INSERT INTO public.products2 (product_no, name, price) VALUES (null, 'Royce', 10);
+				INSERT 0 1
+		D. Primary Keys
+			--> A primary key constraint indicates that a column, or group of columns, can be used as a unique identifier for rows in the table.
+			--> This requires that the values be both unique and not null.
+			--> The difference between UNIQUE and PRIMARY KEYS CONSTRAINTS is that for UNIQUE the values are identical but when null values 
+				it violates constrain where as PRIMARY KEY column is UNIQUE but NOT NULL
+			-->  So, the following two table definitions accept the same data
+			--> Example
+				CREATE TABLE products (
+					product_no integer UNIQUE NOT NULL,
+					name text,
+					price numeric
+				);
+				CREATE TABLE products (
+    				product_no integer PRIMARY KEY,
+   					name text,
+    				price numeric
+				);
+			--> Primary keys can span more than one column; the syntax is similar to unique constraints
+			--> Example
+				CREATE TABLE example (
+					a integer,
+					b integer,
+					c integer,
+					PRIMARY KEY (a, c)
+				);
+				 INSERT INTO public.example (a, b, c) VALUES (1,2,3);
+				 INSERT 0 1
+				 INSERT INTO public.example (a, b, c) VALUES (1,2,4);
+				 INSERT 0 1
+				 INSERT INTO public.example (a, b, c) VALUES (1,2,4);
+				 ERROR:  duplicate key value violates unique constraint "example_pkey"
+				 DETAIL:  Key (a, c)=(1, 4) already exists.
+			--> Adding a primary key will automatically create a unique B-tree index on the column or group of columns listed in the primary key, 
+				and will force the column(s) to be marked NOT NULL.
+			--> A table can have at most one primary key.
+			--> (There can be any number of unique and not-null constraints, which are functionally almost the same thing, but only one can be identified as the primary key.
+			--> Relational database theory dictates that every table must have a primary key. 
+			--> This rule is not enforced by PostgreSQL, but it is usually best to follow it.
+			--> Primary keys are useful both for documentation purposes and for client applications. 
+		E. Foreign Keys
+			--> A foreign key constraint specifies that the values in a column (or a group of columns) must match the values appearing in some row of another table. 
+			--> We say this maintains the referential integrity between two related tables.
+			--> Example
+				CREATE TABLE products (
+					product_no integer PRIMARY KEY,
+					name text,
+					price numeric
+				);
+			--> Let's also assume you have a table storing orders of those products. We want to ensure that the orders table only contains orders of products that actually exist. 
+				So we define a foreign key constraint in the orders table that references the products table BTW this explicit way:
+			--> Example
+				CREATE TABLE orders (
+					order_id integer PRIMARY KEY,
+					product_no integer REFERENCES products (product_no),
+					quantity integer
+				);
+			--> We say that in this situation the orders table is the referencing (child) table and the products table is the referenced (parent) table. 
+				Similarly, there are referencing and referenced columns.
+			--> We can shorten it implicitly
+			--> Example
+				CREATE TABLE orders (
+					order_id integer PRIMARY KEY,
+					product_no integer REFERENCES products,
+					quantity integer
+				);
+			--> A foreign key can also constrain and reference a group of columns.
+			--> As usual, it then needs to be written in table constraint form. Here is a contrived syntax example
+			--> Example
+				CREATE TABLE t1 (
+					a integer PRIMARY KEY,
+					b integer,
+					c integer,
+					FOREIGN KEY (b, c) REFERENCES other_table (c1, c2)
+				);
+			--> You can assign your own name for a foreign key constraint, in the usual way.
+			--> A table can have more than one foreign key constraint.
+			--> This is used to implement many-to-many relationships between tables.
+			--> Say you have tables about products and orders, 
+				but now you want to allow one order to contain possibly many products (which the structure above did not allow).
+			--> Example
+					CREATE TABLE products (
+						product_no integer PRIMARY KEY,
+						name text,
+						price numeric
+					);
+
+					CREATE TABLE orders (
+						order_id integer PRIMARY KEY,
+						shipping_address text,
+						...
+					);
+
+					CREATE TABLE order_items (
+						product_no integer REFERENCES products,
+						order_id integer REFERENCES orders,
+						quantity integer,
+						PRIMARY KEY (product_no, order_id)
+					);
+			--> Notice that the primary key overlaps with the foreign keys in the last table.
+			--> We know that the foreign keys disallow creation of orders that do not relate to any products. 
+			--> But what if a product is removed after an order is created that references it? SQL allows you to handle that as well.
+			--> Disallow deleting a referenced product
+			--> Delete the orders as well
+			--> To illustrate this, let's implement the following policy on the many-to-many relationship example above: 
+				when someone wants to remove a product that is still referenced by an order (via order_items), we disallow it. 
+				If someone removes an order, the order items are removed as well:
+			--> Example
+					CREATE TABLE products (
+						product_no integer PRIMARY KEY,
+						name text,
+						price numeric
+					);
+
+					CREATE TABLE orders (
+						order_id integer PRIMARY KEY,
+						shipping_address text,
+						...
+					);
+					CREATE TABLE order_items (
+						product_no integer REFERENCES products ON DELETE RESTRICT,
+						order_id integer REFERENCES orders ON DELETE CASCADE,
+						quantity integer,
+						PRIMARY KEY (product_no, order_id)
+					);
+				--> ON DELETE RESTRICT pertains to disallow or prevents on deleting data
+				--> ON DELETE CASCADE pertains to allow deleting data cascading where referenced(parent) row is deleted the referencing (child) will be automatically deleted.
+		--> Restricting and cascading deletes are the two most common options.
+		--> RESTRICT prevents deletion of a referenced row. 
+			NO ACTION means that if any referencing rows still exist when the constraint is checked, an error is raised; 
+			this is the default behavior if you do not specify anything.
+		-->  CASCADE specifies that when a referenced row is deleted, row(s) referencing it should be automatically deleted as well.
+		--> ON UPDATE - which is invoked when a referenced column is changed (updated).
+		--> The possible actions are the same. 
+			In this case, CASCADE means that the updated values of the referenced column(s) should be copied into the referencing row(s).
+		--> A foreign key must reference columns that either are a primary key or form a unique constraint.
+		--> This means that the referenced columns always have an index (the one underlying the primary key or unique constraint); 
+		--> so checks on whether a referencing row has a match will be efficient.
+	F. Exclusion Constraints
+		--> Exclusion constraints ensure that if any two rows are compared on the specified columns or expressions using the specified operators, 
+			at least one of these operator comparisons will return false or null.
+		--> Example
+			CREATE TABLE circles (
+				c circle,
+				EXCLUDE USING gist (c WITH &&)
+			);
