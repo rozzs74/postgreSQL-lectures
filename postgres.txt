@@ -1223,3 +1223,75 @@ Chapter 5 (Data Definition)
 				c circle,
 				EXCLUDE USING gist (c WITH &&)
 			);
+
+Chapter 6 (Data Manipulation)
+	--> Introduction data manipulation pertains to update, delete, insert table data and also returning data from modified rows.
+	--> This chapter explains how to extract your long-lost data from the database.
+	I. Inserting Data
+		--> When a table is created, it contains no data.
+		--> The first thing to do before a database can be of much use is to insert data.
+		--> Data is conceptually (abstract) inserted one row at a time. 
+		--> Of course you can also insert more than one row,
+		--> but there is no way to insert less than one row.
+		--> The insert command requires the table name and column values.
+		--> Example (Implicit way)
+			CREATE TABLE products (
+				product_no integer,
+				name text,
+				price numeric
+			);
+			INSERT INTO products VALUES (1, 'Cheese', 9.99); 
+		--> The data values are listed in the order in which the columns appear in the table, separated by commas.
+		-->  Usually, the data values will be literals (constants), but scalar expressions are also allowed.
+		--> Example (Explicit)
+			INSERT INTO products (product_no, name, price) VALUES (1, 'Cheese', 9.99); (ORDER base on column)
+			INSERT INTO products (name, price, product_no) VALUES ('Cheese', 9.99, 1); (UNORDER )
+		--> Many users consider it good practice to always list the column names.
+		--> If you don't have values for all the columns, you can omit some of them. 
+			In that case, the columns will be filled with their default values. 
+		--> Example
+				INSERT INTO products (product_no, name) VALUES (1, 'Cheese');
+				INSERT INTO products VALUES (1, 'Cheese');
+		--> For clarity, you can also request default values explicitly, for individual columns or for the entire row:
+		--> Example
+				INSERT INTO products (product_no, name, price) VALUES (1, 'Cheese', DEFAULT);
+				INSERT INTO products DEFAULT VALUES;
+		--> You can insert multiple rows in a single command:
+		--> Example
+			INSERT INTO products (product_no, name, price) VALUES
+				(1, 'Cheese', 9.99),
+				(2, 'Bread', 1.99),
+				(3, 'Milk', 2.99);
+		--> When inserting a lot of data at the same time, considering using the COPY command.
+	II. Updating Data
+		--> The modification of data that is already in the database is referred to as updating.
+		-->  You can update individual rows, all the rows in a table, or a subset of all rows.
+		--> Each column can be updated separately; the other columns are not affected.
+		--> To update existing rows, use the UPDATE command.
+		--> This requires three pieces of information:
+			a. The name of the table and column to update
+			b. The new value of the column
+			c. Which row(s) to update
+		--> Therefore it is not always possible to directly specify which row to update.
+		--> Instead, you specify which conditions a row must meet in order to be updated.
+		--> For example, this command updates all products that have a price of 5 to have a price of 10:
+		--> If you want to update a single row you must specify always an ID because it makes row unique
+		--> If you want to update many rows you must not specify an ID.
+		--> Example
+			UPDATE products SET price = 10 WHERE price = 5; (NOT SPECIFYING ID and price in table that is  equal to 5  will all update)
+			UPDATE products SET name = 'Bed' WHERE product_no = 1; (ID SPECIFIED SO 1 row will be update)
+		-->  First is the key word UPDATE followed by the table name. 
+		--> As usual, the table name can be schema-qualified, otherwise it is looked up in the path.
+		--> Next is the key word SET followed by the column name, an equal sign, and the new column value.
+		--> The new column value can be any scalar expression, not just a constant. 
+		--> Example 
+			UPDATE products SET price = price * 1.10; (scalar expression)
+			UPDATE products SET price = price * 2; (scalar expression)
+		--> UPDATE products SET price = price * 1.10;
+		--> As you see, the expression for the new value can refer to the existing value(s) in the row.
+		--> We also left out the WHERE clause. If it is omitted, it means that all rows in the table are updated. 
+		-->  If it is present, only those rows that match the WHERE condition are updated.
+		-->  Note that the equals sign in the SET clause is an assignment while the one in the WHERE clause is a comparison, but this does not create any ambiguity(open or interpretation).
+		--> You can update more than one column in an UPDATE command by listing more than one assignment in the SET clause. 
+		--> Example
+			UPDATE mytable SET a = 5, b = 3, c = 1 WHERE a > 0;
